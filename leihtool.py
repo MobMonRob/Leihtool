@@ -52,7 +52,7 @@ def generate_leihschein_pdf(p_studiengang, p_name, p_kurs, p_email, p_ausgeliehe
                             p_ausgegeben_durch, p_leihdatum):
     """
     Generiert basierend auf einem Template und den eingegebenen Informationen einen ausgefüllten Leihschein
-    :param p_studiengang: Name des Studiengangs des Verleihers
+    :param p_studiengang: Name des Studiengangs der verleihenden Person
     :param p_name: Name der ausleihenden Person
     :param p_kurs: Kurs der ausleihenden Person
     :param p_email: E-Mail-Adresse der ausleihenden Person
@@ -114,7 +114,7 @@ def generate_leihschein_pdf(p_studiengang, p_name, p_kurs, p_email, p_ausgeliehe
             # Save the changes to the output PDF
             writer.write(output_pdf)
 
-    print(f'Leihschein PDF generated successfully: {output_file}')
+    print(f'Leihschein PDF erfolgreich erstellt: {output_file}')
 
 
 def create_outlook_task_as_reminder(p_name, p_kurs, p_email, p_ausgeliehene_artikel, p_rueckgabedatum,
