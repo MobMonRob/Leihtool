@@ -48,10 +48,11 @@ def generate_uniform_leihschein_filename(p_name, p_rueckgabedatum):
     return f'{current_date_YYYY_MM_DD}-{rueckgabedatum_formatted}-Leihschein-{p_name}.pdf'
 
 
-def generate_leihschein_pdf(p_name, p_kurs, p_email, p_ausgeliehene_artikel, p_rueckgabedatum, p_verwendungszweck,
+def generate_leihschein_pdf(p_studiengang, p_name, p_kurs, p_email, p_ausgeliehene_artikel, p_rueckgabedatum, p_verwendungszweck,
                             p_ausgegeben_durch, p_leihdatum):
     """
     Generiert basierend auf einem Template und den eingegebenen Informationen einen ausgefüllten Leihschein
+    :param p_studiengang: Name des Studiengangs des Verleihers
     :param p_name: Name der ausleihenden Person
     :param p_kurs: Kurs der ausleihenden Person
     :param p_email: E-Mail-Adresse der ausleihenden Person
@@ -82,6 +83,7 @@ def generate_leihschein_pdf(p_name, p_kurs, p_email, p_ausgeliehene_artikel, p_r
             writer.update_page_form_field_values(
                 writer.pages[0],
                 {
+                    "Studiengang": p_studiengang,
                     "Name": p_name,
                     "Kurs": p_kurs,
                     "Email": p_email,
@@ -168,6 +170,7 @@ if __name__ == "__main__":
         application_path = os.path.dirname(os.path.abspath(__file__))
 
     # Eingabeaufforderungen für alle Formularfelder
+    studiengang = input('Studiengang: ')
     name = input('Name: ')
     kurs = input('Kurs: ')
     email = input('Email: ')
@@ -186,7 +189,7 @@ if __name__ == "__main__":
     leihdatum = datetime.now().strftime('%d.%m.%Y')
 
     # Generiere Leihschein PDF
-    generate_leihschein_pdf(name, kurs, email, ausgeliehene_artikel, rueckgabedatum, verwendungszweck, ausgegeben_durch,
+    generate_leihschein_pdf(studiengang, name, kurs, email, ausgeliehene_artikel, rueckgabedatum, verwendungszweck, ausgegeben_durch,
                             leihdatum)
     create_outlook_task_as_reminder(name, kurs, email, ausgeliehene_artikel, rueckgabedatum, verwendungszweck,
                                     leihdatum)
