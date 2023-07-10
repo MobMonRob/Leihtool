@@ -6,7 +6,7 @@ zur Überprüfung und anschließenden Druck automatisch geöffnet.
 """
 
 __author__ = "Florian Stöckl"
-___version__ = "1.0"
+___version__ = "1.1"
 __maintainer__ = "Florian Stöckl"
 __email__ = "florian.stoeckl@dhbw-karlsruhe.de"
 __status__ = "Production"
