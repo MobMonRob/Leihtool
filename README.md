@@ -13,7 +13,7 @@ Zusätzlich wird ein Outlook-Task mit Ablaufdatum angelegt und das generierte PD
 Empfohlen ist für den Bau einer Windows-Executable das Tool [PyInstaller](https://pyinstaller.org/en/stable/index.html).
 Folgender Befehl baut eine einzige EXE-Datei, die alle benötigten Resourcen enthält:
 ```
-pyinstaller leihtool --onefile --add-data 'Ausleihe_leer.pdf;.'
+pyinstaller leihtool.py --onefile --add-data 'Ausleihe_leer.pdf;.'
 ```
 
 ## Template
