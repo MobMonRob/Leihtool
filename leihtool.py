@@ -49,7 +49,7 @@ def generate_uniform_leihschein_filename(p_name, p_rueckgabedatum):
 
 
 def generate_leihschein_pdf(p_studiengang, p_name, p_kurs, p_email, p_ausgeliehene_artikel, p_rueckgabedatum, p_verwendungszweck,
-                            p_ausgegeben_durch, p_leihdatum):
+                            p_ausgegeben_durch, p_leihdatum, p_leihschein_filename):
     """
     Generiert basierend auf einem Template und den eingegebenen Informationen einen ausgefüllten Leihschein
     :param p_studiengang: Name des Studiengangs der verleihenden Person
@@ -61,17 +61,14 @@ def generate_leihschein_pdf(p_studiengang, p_name, p_kurs, p_email, p_ausgeliehe
     :param p_verwendungszweck: Verwendungszweck
     :param p_ausgegeben_durch: Ausgebende Person
     :param p_leihdatum: Datum der Ausleihe (in der Regel heutiges Datum)
+    :param p_leihschein_filename: Gewünschter Dateiname des Leihschein-PDFs
     :return: Keine Rückgabe
     """
     # Original PDF template file
     template_file = os.path.join(application_path, 'Ausleihe_leer.pdf')
 
-    # Output PDF file name
-
-    output_file = generate_uniform_leihschein_filename(p_name, p_rueckgabedatum)
-
     # Open the output PDF in append and read mode
-    with open(output_file, 'wb') as output_pdf:
+    with open(p_leihschein_filename, 'wb') as output_pdf:
         # Open the template PDF in read mode
         with open(template_file, 'rb') as template_pdf:
             # Create a PDF reader and writer objects
@@ -114,7 +111,7 @@ def generate_leihschein_pdf(p_studiengang, p_name, p_kurs, p_email, p_ausgeliehe
             # Save the changes to the output PDF
             writer.write(output_pdf)
 
-    print(f'Leihschein PDF erfolgreich erstellt: {output_file}')
+    print(f'Leihschein PDF erfolgreich erstellt: {p_leihschein_filename}')
 
 
 def create_outlook_task_as_reminder(p_name, p_kurs, p_email, p_ausgeliehene_artikel, p_rueckgabedatum,
@@ -188,9 +185,11 @@ if __name__ == "__main__":
     ausgegeben_durch = input('Ausgegeben durch: ')
     leihdatum = datetime.now().strftime('%d.%m.%Y')
 
+    leihschein_filename = generate_uniform_leihschein_filename(name, rueckgabedatum)
+
     # Generiere Leihschein PDF
     generate_leihschein_pdf(studiengang, name, kurs, email, ausgeliehene_artikel, rueckgabedatum, verwendungszweck, ausgegeben_durch,
-                            leihdatum)
+                            leihdatum, leihschein_filename)
     create_outlook_task_as_reminder(name, kurs, email, ausgeliehene_artikel, rueckgabedatum, verwendungszweck,
                                     leihdatum)
-    open_pdf_file(generate_uniform_leihschein_filename(name, rueckgabedatum))
+    open_pdf_file(leihschein_filename)
