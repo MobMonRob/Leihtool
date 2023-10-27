@@ -149,7 +149,7 @@ def open_pdf_file(p_leihschein_filename):
     """
     Öffnet PDF im Standardprogramm
     :param p_leihschein_filename:
-    :return:
+    :return: keine Rückgabe
     """
     os.startfile(
         # print command als zweiter Parameter möglich, startet direkten Druck mit primärem Standarddrucker
