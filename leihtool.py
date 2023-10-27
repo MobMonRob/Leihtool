@@ -156,6 +156,35 @@ def open_pdf_file(p_leihschein_filename):
         p_leihschein_filename)
 
 
+def send_email_to_lender(p_email, p_leihschein_filename):
+    """
+    Versendet über Outlook eine E-Mail an die ausleihende Person
+    :param p_mail: E-Mail der ausleihenden Person
+    :param p_leihschein_filename: Dateiname des generierten Leihschein-PDFs
+    :return: keine Rückgabe
+    """
+    outlook = win32com.client.Dispatch('outlook.application')
+    mail = outlook.CreateItem(0)
+    mail.To = p_email
+    mail.Subject = 'Leihschein für entliehene Artikel der DHBW Karlsruhe'
+    mail.Body = 'Guten Tag,\n' \
+                'Sie haben soeben Artikel der DHBW Karlsruhe entliehen.\n' \
+                'Dazu haben Sie einen Leihschein ausgefüllt und unterschrieben, den Sie im Anhang finden.\n' \
+                'Er enthält alle relevanten Informationen, wie entliehene Artikel und Rückgabedatum.\n' \
+                '\n' \
+                'Bitte bringen Sie die Artikel am vereinbarten Rückgabedatum zu der Person zurück, bei der Sie die Artikel entliehen haben.\n' \
+                'Vielen Dank im Voraus.\n' \
+                '\n' \
+                'Mit freundlichen Grüßen\n'
+    # Add default Signature, if available
+
+    # To attach a file to the email (optional):
+    attachment = p_leihschein_filename
+    mail.Attachments.Add(attachment)
+
+    mail.Send()
+
+
 if __name__ == "__main__":
     # Prüfe, wie das Python-Skript ausgeführt wird, um Applikationspfad korrekt zu setzen
     if getattr(sys, 'frozen', False):
@@ -192,4 +221,5 @@ if __name__ == "__main__":
                             leihdatum, leihschein_filename)
     create_outlook_task_as_reminder(name, kurs, email, ausgeliehene_artikel, rueckgabedatum, verwendungszweck,
                                     leihdatum)
+    send_email_to_lender(email, name, leihschein_filename)
     open_pdf_file(leihschein_filename)
