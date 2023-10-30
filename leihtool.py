@@ -15,6 +15,7 @@ import os
 import sys
 from datetime import datetime
 from typing import Optional
+from pathlib import PurePath
 
 import win32com.client
 from pypdf import PdfReader, PdfWriter
@@ -167,7 +168,7 @@ def send_email_to_lender(p_email, p_leihschein_filename):
     mail = outlook.CreateItem(0)
     mail.To = p_email
     mail.Subject = 'Leihschein für entliehene Artikel der DHBW Karlsruhe'
-    mail.Body = 'Guten Tag,\n' \
+    message = 'Guten Tag,\n' \
                 'Sie haben soeben Artikel der DHBW Karlsruhe entliehen.\n' \
                 'Dazu haben Sie einen Leihschein ausgefüllt und unterschrieben, den Sie im Anhang finden.\n' \
                 'Er enthält alle relevanten Informationen, wie entliehene Artikel und Rückgabedatum.\n' \
@@ -177,10 +178,15 @@ def send_email_to_lender(p_email, p_leihschein_filename):
                 '\n' \
                 'Mit freundlichen Grüßen\n'
     # Add default Signature, if available
+    mail.Display
+    index = mail.HTMLbody.find('>', mail.HTMLbody.find('<body')) 
+    mail.HTMLbody = mail.HTMLbody[:index + 1] + message + mail.HTMLbody[index + 1:] 
+
 
     # To attach a file to the email (optional):
-    attachment = p_leihschein_filename
-    mail.Attachments.Add(attachment)
+    # TODO: Aktuelles Verzeichnis der Python-Datei ermitteln
+    absolut_path_to_leihschein_pdf = PurePath(p_leihschein_filename)
+    mail.Attachments.Add(absolut_path_to_leihschein_pdf)
 
     mail.Send()
 
@@ -221,5 +227,5 @@ if __name__ == "__main__":
                             leihdatum, leihschein_filename)
     create_outlook_task_as_reminder(name, kurs, email, ausgeliehene_artikel, rueckgabedatum, verwendungszweck,
                                     leihdatum)
-    send_email_to_lender(email, name, leihschein_filename)
+    send_email_to_lender(email, leihschein_filename)
     open_pdf_file(leihschein_filename)
