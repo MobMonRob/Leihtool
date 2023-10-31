@@ -183,9 +183,7 @@ def send_email_to_lender(p_email, p_leihschein_filename):
     mail.HTMLbody = mail.HTMLbody[:index + 1] + message + mail.HTMLbody[index + 1:] 
 
 
-    # To attach a file to the email (optional):
-    # TODO: Aktuelles Verzeichnis der Python-Datei ermitteln
-    absolut_path_to_leihschein_pdf = PurePath(p_leihschein_filename)
+    absolut_path_to_leihschein_pdf = os.path.join(application_path, p_leihschein_filename)
     mail.Attachments.Add(absolut_path_to_leihschein_pdf)
 
     mail.Send()
