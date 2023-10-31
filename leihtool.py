@@ -15,7 +15,6 @@ import os
 import sys
 from datetime import datetime
 from typing import Optional
-from pathlib import PurePath
 
 import win32com.client
 from pypdf import PdfReader, PdfWriter
