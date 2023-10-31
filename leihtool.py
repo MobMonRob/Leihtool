@@ -177,8 +177,8 @@ def send_email_to_lender(p_email, p_leihschein_filename):
                 '\n' \
                 'Mit freundlichen Grüßen\n'
     # Add default Signature, if available
-    mail.Display
-    index = mail.HTMLbody.find('>', mail.HTMLbody.find('<body')) 
+    mail.Display(False)
+    index = mail.HTMLbody.find('>', mail.HTMLbody.find('<body'))
     mail.HTMLbody = mail.HTMLbody[:index + 1] + message + mail.HTMLbody[index + 1:] 
 
 
