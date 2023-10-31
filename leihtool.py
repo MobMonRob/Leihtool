@@ -167,15 +167,15 @@ def send_email_to_lender(p_email, p_leihschein_filename):
     mail = outlook.CreateItem(0)
     mail.To = p_email
     mail.Subject = 'Leihschein für entliehene Artikel der DHBW Karlsruhe'
-    message = 'Guten Tag,\n' \
-                'Sie haben soeben Artikel der DHBW Karlsruhe entliehen.\n' \
-                'Dazu haben Sie einen Leihschein ausgefüllt und unterschrieben, den Sie im Anhang finden.\n' \
-                'Er enthält alle relevanten Informationen, wie entliehene Artikel und Rückgabedatum.\n' \
-                '\n' \
-                'Bitte bringen Sie die Artikel am vereinbarten Rückgabedatum zu der Person zurück, bei der Sie die Artikel entliehen haben.\n' \
-                'Vielen Dank im Voraus.\n' \
-                '\n' \
-                'Mit freundlichen Grüßen\n'
+    message = 'Guten Tag,<br>' \
+                'Sie haben soeben Artikel der DHBW Karlsruhe entliehen.<br>' \
+                'Dazu haben Sie einen Leihschein ausgefüllt und unterschrieben, den Sie im Anhang finden.<br>' \
+                'Er enthält alle relevanten Informationen, wie entliehene Artikel und Rückgabedatum.<br>' \
+                '<br>' \
+                'Bitte bringen Sie die Artikel am vereinbarten Rückgabedatum zu der Person zurück, bei der Sie die Artikel entliehen haben.<br>' \
+                'Vielen Dank im Voraus.<br>' \
+                '<br>' \
+                'Mit freundlichen Grüßen'
     # Add default Signature, if available
     mail.Display(False)
     index = mail.HTMLbody.find('>', mail.HTMLbody.find('<body'))
