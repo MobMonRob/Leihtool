@@ -170,9 +170,9 @@ def send_email_to_lender(p_email, p_leihschein_filename):
     message = 'Guten Tag,<br>' \
                 'Sie haben soeben Artikel der DHBW Karlsruhe entliehen.<br>' \
                 'Dazu haben Sie einen Leihschein ausgefüllt und unterschrieben, den Sie im Anhang finden.<br>' \
-                'Er enthält alle relevanten Informationen, wie entliehene Artikel und Rückgabedatum.<br>' \
+                'Er enthält alle relevanten Informationen wie die ausgeliehenen Artikel und das Rückgabedatum.<br>' \
                 '<br>' \
-                'Bitte bringen Sie die Artikel am vereinbarten Rückgabedatum zu der Person zurück, bei der Sie die Artikel entliehen haben.<br>' \
+                'Bitte geben Sie die Artikel zum vereinbarten Rückgabetermin an die Person zurück, von der Sie die Artikel ausgeliehen haben.<br>' \
                 'Vielen Dank im Voraus.<br>' \
                 '<br>' \
                 'Mit freundlichen Grüßen'
