@@ -5,10 +5,10 @@ block_cipher = None
 
 
 a = Analysis(
-    ['src\\leihtool.py'],
+    ['leihtool.py'],
     pathex=[],
     binaries=[],
-    datas=[('resources/Ausleihe_leer.pdf', '.')],
+    datas=[('../resources/Ausleihe_leer.pdf', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
