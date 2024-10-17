@@ -32,7 +32,7 @@ MANIFEST
 *.manifest
 # Add the spec-file for GitHub Action PyInstaller-Action-Windows
 *.spec
-!src/*.spec
+!/*.spec
 
 # Installer logs
 pip-log.txt
