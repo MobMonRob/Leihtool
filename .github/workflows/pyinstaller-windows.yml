@@ -12,14 +12,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: PyInstaller Windows
-      uses: JackMcKew/pyinstaller-action-windows@python3-10-pyinstaller-5-3
+      uses: JackMcKew/pyinstaller-action-windows@v0.1.2        
       with:
         path: src
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
-        name: my-exe
-        path: src/dist/windows # or path/to/artifact
+        name: leihtool.exe
+        path: src/dist
 
