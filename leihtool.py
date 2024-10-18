@@ -6,7 +6,7 @@ zur Überprüfung und anschließenden Druck automatisch geöffnet.
 """
 
 __author__ = "Florian Stöckl"
-___version__ = "1.1"
+___version__ = "1.2"
 __maintainer__ = "Florian Stöckl"
 __email__ = "florian.stoeckl@dhbw-karlsruhe.de"
 __status__ = "Production"
@@ -49,7 +49,7 @@ def generate_uniform_leihschein_filename(p_name, p_rueckgabedatum):
 
 
 def generate_leihschein_pdf(p_studiengang, p_name, p_kurs, p_email, p_ausgeliehene_artikel, p_rueckgabedatum, p_verwendungszweck,
-                            p_ausgegeben_durch, p_leihdatum):
+                            p_ausgegeben_durch, p_leihdatum, p_leihschein_filename):
     """
     Generiert basierend auf einem Template und den eingegebenen Informationen einen ausgefüllten Leihschein
     :param p_studiengang: Name des Studiengangs der verleihenden Person
@@ -61,17 +61,14 @@ def generate_leihschein_pdf(p_studiengang, p_name, p_kurs, p_email, p_ausgeliehe
     :param p_verwendungszweck: Verwendungszweck
     :param p_ausgegeben_durch: Ausgebende Person
     :param p_leihdatum: Datum der Ausleihe (in der Regel heutiges Datum)
+    :param p_leihschein_filename: Gewünschter Dateiname des Leihschein-PDFs
     :return: Keine Rückgabe
     """
     # Original PDF template file
     template_file = os.path.join(application_path, 'Ausleihe_leer.pdf')
 
-    # Output PDF file name
-
-    output_file = generate_uniform_leihschein_filename(p_name, p_rueckgabedatum)
-
     # Open the output PDF in append and read mode
-    with open(output_file, 'wb') as output_pdf:
+    with open(p_leihschein_filename, 'wb') as output_pdf:
         # Open the template PDF in read mode
         with open(template_file, 'rb') as template_pdf:
             # Create a PDF reader and writer objects
@@ -114,7 +111,7 @@ def generate_leihschein_pdf(p_studiengang, p_name, p_kurs, p_email, p_ausgeliehe
             # Save the changes to the output PDF
             writer.write(output_pdf)
 
-    print(f'Leihschein PDF erfolgreich erstellt: {output_file}')
+    print(f'Leihschein PDF erfolgreich erstellt: {p_leihschein_filename}')
 
 
 def create_outlook_task_as_reminder(p_name, p_kurs, p_email, p_ausgeliehene_artikel, p_rueckgabedatum,
@@ -152,11 +149,43 @@ def open_pdf_file(p_leihschein_filename):
     """
     Öffnet PDF im Standardprogramm
     :param p_leihschein_filename:
-    :return:
+    :return: keine Rückgabe
     """
     os.startfile(
         # print command als zweiter Parameter möglich, startet direkten Druck mit primärem Standarddrucker
         p_leihschein_filename)
+
+
+def send_email_to_lender(p_email, p_leihschein_filename):
+    """
+    Versendet über Outlook eine E-Mail an die ausleihende Person
+    :param p_mail: E-Mail der ausleihenden Person
+    :param p_leihschein_filename: Dateiname des generierten Leihschein-PDFs
+    :return: keine Rückgabe
+    """
+    outlook = win32com.client.Dispatch('outlook.application')
+    mail = outlook.CreateItem(0)
+    mail.To = p_email
+    mail.Subject = 'Leihschein für entliehene Artikel der DHBW Karlsruhe'
+    message = 'Guten Tag,<br>' \
+                'Sie haben soeben Artikel der DHBW Karlsruhe entliehen.<br>' \
+                'Dazu haben Sie einen Leihschein ausgefüllt und unterschrieben, den Sie im Anhang finden.<br>' \
+                'Er enthält alle relevanten Informationen wie die ausgeliehenen Artikel und das Rückgabedatum.<br>' \
+                '<br>' \
+                'Bitte geben Sie die Artikel zum vereinbarten Rückgabetermin an die Person zurück, von der Sie die Artikel ausgeliehen haben.<br>' \
+                'Vielen Dank im Voraus.<br>' \
+                '<br>' \
+                'Mit freundlichen Grüßen'
+    # Add default Signature, if available
+    mail.Display(False)
+    index = mail.HTMLbody.find('>', mail.HTMLbody.find('<body'))
+    mail.HTMLbody = mail.HTMLbody[:index + 1] + message + mail.HTMLbody[index + 1:] 
+
+
+    absolut_path_to_leihschein_pdf = os.path.join(os.path.dirname(sys.executable), p_leihschein_filename)
+    mail.Attachments.Add(absolut_path_to_leihschein_pdf)
+
+    mail.Send()
 
 
 if __name__ == "__main__":
@@ -188,9 +217,12 @@ if __name__ == "__main__":
     ausgegeben_durch = input('Ausgegeben durch: ')
     leihdatum = datetime.now().strftime('%d.%m.%Y')
 
+    leihschein_filename = generate_uniform_leihschein_filename(name, rueckgabedatum)
+
     # Generiere Leihschein PDF
     generate_leihschein_pdf(studiengang, name, kurs, email, ausgeliehene_artikel, rueckgabedatum, verwendungszweck, ausgegeben_durch,
-                            leihdatum)
+                            leihdatum, leihschein_filename)
     create_outlook_task_as_reminder(name, kurs, email, ausgeliehene_artikel, rueckgabedatum, verwendungszweck,
                                     leihdatum)
-    open_pdf_file(generate_uniform_leihschein_filename(name, rueckgabedatum))
+    send_email_to_lender(email, leihschein_filename)
+    open_pdf_file(leihschein_filename)

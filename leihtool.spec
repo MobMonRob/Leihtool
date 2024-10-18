@@ -8,7 +8,7 @@ a = Analysis(
     ['leihtool.py'],
     pathex=[],
     binaries=[],
-    datas=[('../resources/Ausleihe_leer.pdf', '.')],
+    datas=[('Ausleihe_leer.pdf', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

@@ -16,10 +16,10 @@ jobs:
     - name: PyInstaller Windows
       uses: JackMcKew/pyinstaller-action-windows@v0.1.2        
       with:
-        path: src
+        path: ./
 
     - uses: actions/upload-artifact@v3
       with:
         name: leihtool.exe
-        path: src/dist
+        path: dist
 
