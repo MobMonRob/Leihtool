@@ -199,6 +199,8 @@ if __name__ == "__main__":
         application_path = os.path.dirname(os.path.abspath(__file__))
     execution_path = os.path.dirname(sys.executable)
 
+    # Programmheader
+    print(f"{'*' * 60}\n Sie verwenden das Leihscheintool in Version {___version__}\n Es hilft Ihnen beim Verleih von Hardware der DHBW.\n{'*' * 60}")
 
     # Eingabeaufforderungen für alle Formularfelder
     studiengang = input('Studiengang: ')
