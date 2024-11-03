@@ -18,6 +18,7 @@ from typing import Optional
 
 import win32com.client
 from pypdf import PdfReader, PdfWriter
+import questionary
 
 
 class Artikel:
@@ -203,22 +204,23 @@ if __name__ == "__main__":
     print(f"{'*' * 60}\n Sie verwenden das Leihscheintool in Version {___version__}\n Es hilft Ihnen beim Verleih von Hardware der DHBW.\n{'*' * 60}")
 
     # Eingabeaufforderungen für alle Formularfelder
-    studiengang = input('Studiengang: ')
-    name = input('Name: ')
-    kurs = input('Kurs: ')
-    email = input('Email: ')
-    anzahl_ausgeliehene_artikel = int(input('Anzahl ausgeliehene Artikel: '))
+    studiengang = questionary.text('Studiengang:').ask()
+    name = questionary.text('Name:').ask()
+    kurs = questionary.text('Kurs:').ask()
+    email = questionary.text('Email:').ask()
+    anzahl_ausgeliehene_artikel = int(questionary.text('Anzahl ausgeliehene Artikel:').ask())
     ausgeliehene_artikel = [Artikel() for i in range(anzahl_ausgeliehene_artikel)]
     for artikel in ausgeliehene_artikel:
-        pos = input('Pos.: ')
+        questionary.print("Eingabe des nächsten Artikels:")
+        pos = questionary.text('Pos.:').ask()
         artikel.pos = int(pos) if pos else None
-        artikel.menge = int(input('Menge: '))
-        artikel.bezeichnung = input('Bezeichnung: ')
-        artikel.seriennummer = input('Seriennummer: ')
-        artikel.inventar_nummer = input('Inventar-Nummer: ')
-    rueckgabedatum = input('Rückgabedatum: ')
-    verwendungszweck = input('Verwendungszweck: ')
-    ausgegeben_durch = input('Ausgegeben durch: ')
+        artikel.menge = int(questionary.text('Menge:').ask())
+        artikel.bezeichnung = questionary.text('Bezeichnung:').ask()
+        artikel.seriennummer = questionary.text('Seriennummer:').ask()
+        artikel.inventar_nummer = questionary.text('Inventar-Nummer:').ask()
+    rueckgabedatum = questionary.text('Rückgabedatum:').ask()
+    verwendungszweck = questionary.text('Verwendungszweck:').ask()
+    ausgegeben_durch = questionary.text('Ausgegeben durch:').ask()
     leihdatum = datetime.now().strftime('%d.%m.%Y')
 
     leihschein_filename = generate_uniform_leihschein_filename(name, rueckgabedatum)
@@ -226,7 +228,7 @@ if __name__ == "__main__":
     # Generiere Leihschein PDF
     generate_leihschein_pdf(studiengang, name, kurs, email, ausgeliehene_artikel, rueckgabedatum, verwendungszweck, ausgegeben_durch,
                             leihdatum, leihschein_filename)
-    create_outlook_task_as_reminder(name, kurs, email, ausgeliehene_artikel, rueckgabedatum, verwendungszweck,
-                                    leihdatum)
-    send_email_to_lender(email, leihschein_filename)
+    # create_outlook_task_as_reminder(name, kurs, email, ausgeliehene_artikel, rueckgabedatum, verwendungszweck,
+    #                                 leihdatum)
+    # send_email_to_lender(email, leihschein_filename)
     open_pdf_file(leihschein_filename)
