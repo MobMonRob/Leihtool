@@ -211,7 +211,7 @@ if __name__ == "__main__":
     anzahl_ausgeliehene_artikel = int(questionary.text('Anzahl ausgeliehene Artikel:').ask())
     ausgeliehene_artikel = [Artikel() for i in range(anzahl_ausgeliehene_artikel)]
     for artikel in ausgeliehene_artikel:
-        questionary.print("Eingabe des nächsten Artikels:")
+        questionary.print(f"Eingabe des {ausgeliehene_artikel.index(artikel) + 1}. Artikels:", style='bold')
         pos = questionary.text('Pos.:').ask()
         artikel.pos = int(pos) if pos else None
         artikel.menge = int(questionary.text('Menge:').ask())
