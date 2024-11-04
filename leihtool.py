@@ -15,10 +15,13 @@ import os
 import sys
 from datetime import datetime
 from typing import Optional
+import re
 
+from prompt_toolkit.document import Document
 import win32com.client
 from pypdf import PdfReader, PdfWriter
 import questionary
+from questionary import Validator, ValidationError, prompt
 
 
 class Artikel:
@@ -34,6 +37,25 @@ class Artikel:
         self.seriennummer = seriennummer
         self.inventar_nummer = inventar_nummer
 
+class NameValidator(Validator):
+    def validate(self, document: Document) -> None:
+        if len(document.text) == 0:
+            raise ValidationError(message="Bitte geben Sie einen Namen ein.")
+        
+class AnzahlValidator(Validator):
+    def validate(self, document: Document) -> None:
+        if not document.text.isdigit() or int(document.text) < 1: 
+            raise ValidationError(message="Bitte geben Sie eine Zahl größer 0 ein. Sie füllen gerade einen Leihschein aus, um mindestens einen Artikel zu verleihen.")
+
+class NumberValidator(Validator):
+    def validate(self, document: Document) -> None:
+        if not document.text.isdigit(): 
+            raise ValidationError(message="Bitte geben Sie eine Zahl ein.")
+        
+class EMailValidator(Validator):
+    def validate(self, document: Document) -> None:
+        if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", document.text): 
+            raise ValidationError(message="Bitte geben Sie eine gültige E-Mail-Adresse ein.")
 
 def generate_uniform_leihschein_filename(p_name, p_rueckgabedatum):
     """
@@ -222,18 +244,15 @@ if __name__ == "__main__":
             'Wirtschaftsingenierurwesen',
             'Medien'
         ]).ask()
-    name = questionary.text('Name:').ask()
+    name = questionary.text('Name:', validate=NameValidator).ask()
     kurs = questionary.text('Kurs:').ask()
-    email = questionary.text('Email:').ask()
-    anzahl_ausgeliehene_artikel_string = questionary.text('Anzahl ausgeliehene Artikel:').ask()
-    anzahl_ausgeliehene_artikel = int(anzahl_ausgeliehene_artikel_string) if anzahl_ausgeliehene_artikel_string.isdigit() else 0
+    email = questionary.text('Email:', validate=EMailValidator).ask()
+    anzahl_ausgeliehene_artikel = int(questionary.text('Anzahl ausgeliehene Artikel:', validate=AnzahlValidator).ask())
     ausgeliehene_artikel = [Artikel() for i in range(anzahl_ausgeliehene_artikel)]
     for artikel in ausgeliehene_artikel:
         questionary.print(f"Eingabe des {ausgeliehene_artikel.index(artikel) + 1}. Artikels:", style='bold')
-        pos_string = questionary.text('Pos.:').ask()
-        artikel.pos = int(pos_string) if pos_string else None
-        menge_string = questionary.text('Menge:').ask()
-        artikel.menge = int(menge_string) if menge_string.isdigit() else None
+        artikel.pos = int(questionary.text('Pos.:', validate=NumberValidator).ask())
+        artikel.menge = int(questionary.text('Menge:', validate=NumberValidator).ask())
         artikel.bezeichnung = questionary.text('Bezeichnung:').ask()
         artikel.seriennummer = questionary.text('Seriennummer:').ask()
         artikel.inventar_nummer = questionary.text('Inventar-Nummer:').ask()
