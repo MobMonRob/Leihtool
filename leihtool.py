@@ -208,13 +208,15 @@ if __name__ == "__main__":
     name = questionary.text('Name:').ask()
     kurs = questionary.text('Kurs:').ask()
     email = questionary.text('Email:').ask()
-    anzahl_ausgeliehene_artikel = int(questionary.text('Anzahl ausgeliehene Artikel:').ask())
+    anzahl_ausgeliehene_artikel_string = questionary.text('Anzahl ausgeliehene Artikel:').ask()
+    anzahl_ausgeliehene_artikel = int(anzahl_ausgeliehene_artikel_string) if anzahl_ausgeliehene_artikel_string.isdigit() else 0
     ausgeliehene_artikel = [Artikel() for i in range(anzahl_ausgeliehene_artikel)]
     for artikel in ausgeliehene_artikel:
         questionary.print(f"Eingabe des {ausgeliehene_artikel.index(artikel) + 1}. Artikels:", style='bold')
-        pos = questionary.text('Pos.:').ask()
-        artikel.pos = int(pos) if pos else None
-        artikel.menge = int(questionary.text('Menge:').ask())
+        pos_string = questionary.text('Pos.:').ask()
+        artikel.pos = int(pos_string) if pos_string else None
+        menge_string = questionary.text('Menge:').ask()
+        artikel.menge = int(menge_string) if menge_string.isdigit() else None
         artikel.bezeichnung = questionary.text('Bezeichnung:').ask()
         artikel.seriennummer = questionary.text('Seriennummer:').ask()
         artikel.inventar_nummer = questionary.text('Inventar-Nummer:').ask()
