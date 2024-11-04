@@ -204,7 +204,24 @@ if __name__ == "__main__":
     print(f"{'*' * 60}\n Sie verwenden das Leihscheintool in Version {___version__}\n Es hilft Ihnen beim Verleih von Hardware der DHBW.\n{'*' * 60}")
 
     # Eingabeaufforderungen für alle Formularfelder
-    studiengang = questionary.text('Studiengang:').ask()
+    studiengang = questionary.autocomplete(
+        'Studiengang:',
+        choices=[
+            'Informatik',
+            'Maschinenbau',
+            'Gesundheitswesen',
+            'Mechatronik',
+            'BWL',
+            'Sozialwesen',
+            'Angewandte Hebammenwissenschaft',
+            'Soziale Arbeit',
+            'Architektur',
+            'Bauingenieurwesen',
+            'Elektrotechnik',
+            'Medizintechnik',
+            'Wirtschaftsingenierurwesen',
+            'Medien'
+        ]).ask()
     name = questionary.text('Name:').ask()
     kurs = questionary.text('Kurs:').ask()
     email = questionary.text('Email:').ask()
