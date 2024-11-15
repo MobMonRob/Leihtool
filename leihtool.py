@@ -16,6 +16,7 @@ import sys
 from datetime import datetime
 from typing import Optional
 import re
+from datetime import datetime
 
 from prompt_toolkit.document import Document
 import win32com.client
@@ -56,6 +57,19 @@ class EMailValidator(Validator):
     def validate(self, document: Document) -> None:
         if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", document.text): 
             raise ValidationError(message="Bitte geben Sie eine gültige E-Mail-Adresse ein.")
+        
+class DateValidator(Validator):
+    def validate(self, document: Document) -> None:
+        if re.fullmatch(r"[0-3][0-9]\.[0-1][0-9]\.[0-9]{4}", document.text):
+            try:
+               return_date = datetime.strptime(document.text, "%d.%m.%Y").date()
+            except ValueError:
+                raise ValidationError(message="Bitte geben Sie ein gültiges Datum im Format DD.MM.YYYY ein.")
+            now = datetime.now().date()
+            if return_date < now:
+               raise ValidationError(message="Das Rückgabedatum kann nicht in der Vergangenheit liegen.")
+        else:
+            raise ValidationError(message="Bitte geben Sie ein gültiges Datum im Format DD.MM.YYYY ein.")
 
 def generate_uniform_leihschein_filename(p_name, p_rueckgabedatum):
     """
@@ -256,7 +270,7 @@ if __name__ == "__main__":
         artikel.bezeichnung = questionary.text('Bezeichnung:').ask()
         artikel.seriennummer = questionary.text('Seriennummer:').ask()
         artikel.inventar_nummer = questionary.text('Inventar-Nummer:').ask()
-    rueckgabedatum = questionary.text('Rückgabedatum:').ask()
+    rueckgabedatum = questionary.text('Rückgabedatum:', validate=DateValidator).ask()
     verwendungszweck = questionary.text('Verwendungszweck:').ask()
     ausgegeben_durch = questionary.text('Ausgegeben durch:').ask()
     leihdatum = datetime.now().strftime('%d.%m.%Y')
