@@ -17,6 +17,7 @@ from datetime import datetime
 from typing import Optional
 import re
 from datetime import datetime
+import keyboard
 
 from prompt_toolkit.document import Document
 import win32com.client
@@ -224,6 +225,36 @@ def send_email_to_lender(p_email, p_leihschein_filename):
 
     mail.Send()
 
+def show_menu():
+    menu_options = [
+        "Standardwerte festlegen",
+        "Einstellungen für externe Anwendungen (Obsidian)",
+        "Programm beenden"
+    ]
+    choice = questionary.select(
+        "Wählen Sie eine Option:",
+        choices=menu_options
+    ).ask()
+
+    if choice == "Standardwerte festlegen":
+        # Aktion für Option 1
+        pass
+    elif choice == "Einstellungen für externe Anwendungen (Obsidian)":
+        # Aktion für Option 2
+        pass
+    elif choice == "Programm beenden":
+        sys.exit(0)
+
+# Funktion, die auf F1-Taste reagiert
+def on_f1_press(event):
+    sys.stdout.write('\033[2K\033[1G')  # Löscht die aktuelle Zeile im Terminal
+    print("F1 wurde gedrückt. Öffne Menü...")
+    show_menu()
+
+# Überwachen der F1-Taste
+keyboard.on_press_key("F1", on_f1_press)
+
+
 
 if __name__ == "__main__":
     # Prüfe, wie das Python-Skript ausgeführt wird, um Applikationspfad korrekt zu setzen
@@ -237,7 +268,12 @@ if __name__ == "__main__":
     execution_path = os.path.dirname(sys.executable)
 
     # Programmheader
-    print(f"{'*' * 60}\n Sie verwenden das Leihscheintool in Version {___version__}\n Es hilft Ihnen beim Verleih von Hardware der DHBW.\n{'*' * 60}")
+    print(f"{'*' * 60}\n Sie verwenden das Leihscheintool in Version {___version__}\n" 
+           + " Es hilft Ihnen beim Verleih von Hardware der DHBW.\n"
+           + "\n"
+           + " Sie können jederzeit mit F1 ins Menü wechseln,\n"
+            + " um Einstellungen vorzunehmen.\n"
+          + f"{'*' * 60}")
 
     # Eingabeaufforderungen für alle Formularfelder
     studiengang = questionary.autocomplete(
