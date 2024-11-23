@@ -29,7 +29,6 @@ class Artikel:
     """
     Klasse für entliehene Artikel
     """
-
     def __init__(self, p_pos: Optional[int] = None, menge: int = None, bezeichnung: str = None,
                  seriennummer: Optional[str] = None, inventar_nummer: Optional[str] = None):
         self.pos = p_pos
@@ -37,6 +36,21 @@ class Artikel:
         self.bezeichnung = bezeichnung
         self.seriennummer = seriennummer
         self.inventar_nummer = inventar_nummer
+
+class FormularData:
+    """
+    Klasse für alle Formulardaten
+    """
+    def __init__(self):
+        self.studiengang = None
+        self.name = None
+        self.kurs = None
+        self.email = None
+        self.ausgeliehene_artikel = [Artikel()]
+        self.rueckgabedatum = None
+        self.verwendungszweck = None
+        self.ausgegeben_durch = None
+        self.leihdatum = None
 
 class NameValidator(Validator):
     def validate(self, document: Document) -> None:
@@ -71,33 +85,23 @@ class DateValidator(Validator):
         else:
             raise ValidationError(message="Bitte geben Sie ein gültiges Datum im Format DD.MM.YYYY ein.")
 
-def generate_uniform_leihschein_filename(p_name, p_rueckgabedatum):
+def generate_uniform_leihschein_filename(p_formular_data: FormularData):
     """
     Hilfsmethoden zur Erstellung eines einheitlichen Dateinamens für Leihscheine
-    :param p_name: Name der ausleihenden Person
-    :param p_rueckgabedatum: Rückgabedatum aller Artikel
+    :param p_formular_data: Alle Formulardaten
     :return: Einheitlicher Dateiname im Format <Heutiges Datum>-<Rückgabedatum>-Leihschein-<Name der ausleihenden Person>.pdf
     """
-    current_date_YYYY_MM_DD = datetime.now().strftime('%Y-%m-%d')
-    rueckgabedatum_datetime = datetime.strptime(p_rueckgabedatum, "%d.%m.%Y")
+    current_date_yyyy_mm_dd = datetime.now().strftime('%Y-%m-%d')
+    rueckgabedatum_datetime = datetime.strptime(p_formular_data.rueckgabedatum, "%d.%m.%Y")
     rueckgabedatum_formatted = rueckgabedatum_datetime.strftime('%Y-%m-%d')
 
-    return f'{current_date_YYYY_MM_DD}-{rueckgabedatum_formatted}-Leihschein-{p_name}.pdf'
+    return f'{current_date_yyyy_mm_dd}-{rueckgabedatum_formatted}-Leihschein-{p_formular_data.name}.pdf'
 
 
-def generate_leihschein_pdf(p_studiengang, p_name, p_kurs, p_email, p_ausgeliehene_artikel, p_rueckgabedatum, p_verwendungszweck,
-                            p_ausgegeben_durch, p_leihdatum, p_leihschein_filename):
+def generate_leihschein_pdf(p_formular_data: FormularData, p_leihschein_filename):
     """
     Generiert basierend auf einem Template und den eingegebenen Informationen einen ausgefüllten Leihschein
-    :param p_studiengang: Name des Studiengangs der verleihenden Person
-    :param p_name: Name der ausleihenden Person
-    :param p_kurs: Kurs der ausleihenden Person
-    :param p_email: E-Mail-Adresse der ausleihenden Person
-    :param p_ausgeliehene_artikel: Ausgeliehene Artikel
-    :param p_rueckgabedatum: Rückgabedatum aller Artikel
-    :param p_verwendungszweck: Verwendungszweck
-    :param p_ausgegeben_durch: Ausgebende Person
-    :param p_leihdatum: Datum der Ausleihe (in der Regel heutiges Datum)
+    :param p_formular_data: Alle Formulardaten
     :param p_leihschein_filename: Gewünschter Dateiname des Leihschein-PDFs
     :return: Keine Rückgabe
     """
@@ -117,18 +121,18 @@ def generate_leihschein_pdf(p_studiengang, p_name, p_kurs, p_email, p_ausgeliehe
             writer.update_page_form_field_values(
                 writer.pages[0],
                 {
-                    "Studiengang": p_studiengang,
-                    "Name": p_name,
-                    "Kurs": p_kurs,
-                    "Email": p_email,
-                    "Rückgabedatum": p_rueckgabedatum,
-                    "Verwendungszweck": p_verwendungszweck,
-                    "Ausgegeben durch": p_ausgegeben_durch,
-                    "Datum": p_leihdatum
+                    "Studiengang": p_formular_data.studiengang,
+                    "Name": p_formular_data.name,
+                    "Kurs": p_formular_data.kurs,
+                    "Email": p_formular_data.email,
+                    "Rückgabedatum": p_formular_data.rueckgabedatum,
+                    "Verwendungszweck": p_formular_data.verwendungszweck,
+                    "Ausgegeben durch": p_formular_data.ausgegeben_durch,
+                    "Datum": p_formular_data.leihdatum
                 }
             )
             ausgeliehene_artikel_line = 0
-            for p_artikel in p_ausgeliehene_artikel:
+            for p_artikel in p_formular_data.ausgeliehene_artikel:
                 artikel_appendix = ''
                 if ausgeliehene_artikel_line > 0:
                     artikel_appendix = '_' + str(ausgeliehene_artikel_line)
@@ -151,17 +155,10 @@ def generate_leihschein_pdf(p_studiengang, p_name, p_kurs, p_email, p_ausgeliehe
     print(f'Leihschein PDF erfolgreich erstellt: {p_leihschein_filename}')
 
 
-def create_outlook_task_as_reminder(p_name, p_kurs, p_email, p_ausgeliehene_artikel, p_rueckgabedatum,
-                                    p_verwendungszweck, p_leihdatum):
+def create_outlook_task_as_reminder(p_formular_data: FormularData):
     """
     Hilfsmethode zur Erstellung eines Outlook Tasks mit Ablaufdatum=Rückgabedatum und allen relevanten Informationen zur Ausleihe
-    :param p_name: Name der ausleihenden Person
-    :param p_kurs: Kurs der ausleihenden Person
-    :param p_email: E-Mail-Adresse der ausleihenden Person
-    :param p_ausgeliehene_artikel: Ausgeliehene Artikel
-    :param p_rueckgabedatum: Rückgabedatum aller Artikel
-    :param p_verwendungszweck: Verwendungszweck
-    :param p_leihdatum: Datum der Ausleihe (in der Regel heutiges Datum)
+    :param p_formular_data: Alle Formulardaten
     :return:
     """
     outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
@@ -169,14 +166,14 @@ def create_outlook_task_as_reminder(p_name, p_kurs, p_email, p_ausgeliehene_arti
     task = tasks_folder.Items.Add()
 
     ausgeliehene_artikel_body = ''
-    for artikel in p_ausgeliehene_artikel:
+    for artikel in p_formular_data.ausgeliehene_artikel:
         ausgeliehene_artikel_body += artikel.bezeichnung + ', '
 
-    rueckgabedatum_datetime = datetime.strptime(p_rueckgabedatum, "%d.%m.%Y")
+    rueckgabedatum_datetime = datetime.strptime(p_formular_data.rueckgabedatum, "%d.%m.%Y")
     rueckgabedatum_formatted = rueckgabedatum_datetime.strftime('%m/%d/%Y')
 
-    task.Subject = 'Rückgabe des Leihscheins ' + generate_uniform_leihschein_filename(p_name, p_rueckgabedatum)
-    task.Body = f'Die Rückgabe von {p_name} ({p_email}) aus dem Kurs {p_kurs} ist fällig. Folgende Artikel wurden am {p_leihdatum} für {p_verwendungszweck} geliehen: \n{ausgeliehene_artikel_body}'
+    task.Subject = 'Rückgabe des Leihscheins ' + generate_uniform_leihschein_filename(p_formular_data)
+    task.Body = f'Die Rückgabe von {p_formular_data.name} ({p_formular_data.email}) aus dem Kurs {p_formular_data.kurs} ist fällig. Folgende Artikel wurden am {p_formular_data.leihdatum} für {p_formular_data.verwendungszweck} geliehen: \n{ausgeliehene_artikel_body}'
     task.DueDate = rueckgabedatum_formatted
 
     task.Save()
@@ -259,11 +256,6 @@ def on_f1_press(event):
     print("F1 wurde gedrückt. Öffne Menü...")
     show_menu()
 
-# Überwachen der F1-Taste
-keyboard.on_press_key("F1", on_f1_press)
-
-
-
 if __name__ == "__main__":
     # Prüfe, wie das Python-Skript ausgeführt wird, um Applikationspfad korrekt zu setzen
     if getattr(sys, 'frozen', False):
@@ -282,9 +274,13 @@ if __name__ == "__main__":
            + " Sie können jederzeit mit F1 ins Menü wechseln,\n"
             + " um Einstellungen vorzunehmen.\n"
           + f"{'*' * 60}")
+    # Überwachen der F1-Taste
+    keyboard.on_press_key("F1", on_f1_press)
+
+    formular_data = FormularData()
 
     # Eingabeaufforderungen für alle Formularfelder
-    studiengang = questionary.autocomplete(
+    formular_data.studiengang = questionary.autocomplete(
         'Studiengang:',
         choices=[
             'Informatik',
@@ -302,33 +298,30 @@ if __name__ == "__main__":
             'Wirtschaftsingenierurwesen',
             'Medien'
         ]).ask()
-    name = questionary.text('Name:', validate=NameValidator).ask()
-    kurs = questionary.text('Kurs:').ask()
-    email = questionary.text('Email:', validate=EMailValidator).ask()
+    formular_data.name = questionary.text('Name:', validate=NameValidator).ask()
+    formular_data.kurs = questionary.text('Kurs:').ask()
+    formular_data.email = questionary.text('Email:', validate=EMailValidator).ask()
     anzahl_ausgeliehene_artikel = int(questionary.text('Anzahl ausgeliehene Artikel:', validate=AnzahlValidator).ask())
-    ausgeliehene_artikel = [Artikel() for i in range(anzahl_ausgeliehene_artikel)]
-    for artikel in ausgeliehene_artikel:
-        questionary.print(f"Eingabe des {ausgeliehene_artikel.index(artikel) + 1}. Artikels:", style='bold')
+    formular_data.ausgeliehene_artikel = [Artikel() for i in range(anzahl_ausgeliehene_artikel)]
+    for artikel in formular_data.ausgeliehene_artikel:
+        questionary.print(f"Eingabe des {formular_data.ausgeliehene_artikel.index(artikel) + 1}. Artikels:", style='bold')
         artikel.pos = int(questionary.text('Pos.:', validate=NumberValidator).ask())
         artikel.menge = int(questionary.text('Menge:', validate=NumberValidator).ask())
         artikel.bezeichnung = questionary.text('Bezeichnung:').ask()
         artikel.seriennummer = questionary.text('Seriennummer:').ask()
         artikel.inventar_nummer = questionary.text('Inventar-Nummer:').ask()
-    rueckgabedatum = questionary.text('Rückgabedatum:', validate=DateValidator).ask()
-    verwendungszweck = questionary.text('Verwendungszweck:').ask()
-    ausgegeben_durch = questionary.text('Ausgegeben durch:').ask()
-    leihdatum = datetime.now().strftime('%d.%m.%Y')
+    formular_data.rueckgabedatum = questionary.text('Rückgabedatum:', validate=DateValidator).ask()
+    formular_data.verwendungszweck = questionary.text('Verwendungszweck:').ask()
+    formular_data.ausgegeben_durch = questionary.text('Ausgegeben durch:').ask()
+    formular_data.leihdatum = datetime.now().strftime('%d.%m.%Y')
 
-    leihschein_filename = generate_uniform_leihschein_filename(name, rueckgabedatum)
+    leihschein_filename = generate_uniform_leihschein_filename(formular_data)
 
     # Generiere Leihschein PDF
-    generate_leihschein_pdf(studiengang, name, kurs, email, ausgeliehene_artikel, rueckgabedatum, verwendungszweck, ausgegeben_durch,
-                            leihdatum, leihschein_filename)
-    # create_outlook_task_as_reminder(name, kurs, email, ausgeliehene_artikel, rueckgabedatum, verwendungszweck,
-    #                                 leihdatum)
+    generate_leihschein_pdf(formular_data, leihschein_filename)
+    # create_outlook_task_as_reminder(formular_data)
     notify_lender_by_email = questionary.confirm("Soll eine E-Mail an die ausleihende Person gesendet werden?").ask()
     if notify_lender_by_email:
-        # send_email_to_lender(email, leihschein_filename)
+        # send_email_to_lender(formular_data.email, leihschein_filename)
         print("E-Mail an die ausleihende Person wurde versendet.")
-    # send_email_to_lender(email, leihschein_filename)
     open_pdf_file(leihschein_filename)
