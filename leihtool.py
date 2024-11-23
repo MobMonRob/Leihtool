@@ -16,14 +16,13 @@ import sys
 from datetime import datetime
 from typing import Optional
 import re
-from datetime import datetime
 import keyboard
 
 from prompt_toolkit.document import Document
 import win32com.client
 from pypdf import PdfReader, PdfWriter
 import questionary
-from questionary import Validator, ValidationError, prompt
+from questionary import Validator, ValidationError
 
 
 class Artikel:
