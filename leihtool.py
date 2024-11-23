@@ -225,6 +225,10 @@ def send_email_to_lender(p_email, p_leihschein_filename):
     mail.Send()
 
 def show_menu():
+    """
+    Zeigt ein Menü mit verschiedenen Optionen an
+    :return: keine Rückgabe
+    """
     menu_options = [
         "Standardwerte festlegen",
         "Einstellungen für externe Anwendungen (Obsidian)",
@@ -246,6 +250,11 @@ def show_menu():
 
 # Funktion, die auf F1-Taste reagiert
 def on_f1_press(event):
+    """
+    Funktion, die auf F1-Taste reagiert und das Menü anzeigt
+    :param event: Event-Objekt
+    :return: keine Rückgabe
+    """
     sys.stdout.write('\033[2K\033[1G')  # Löscht die aktuelle Zeile im Terminal
     print("F1 wurde gedrückt. Öffne Menü...")
     show_menu()
