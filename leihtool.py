@@ -317,5 +317,9 @@ if __name__ == "__main__":
                             leihdatum, leihschein_filename)
     # create_outlook_task_as_reminder(name, kurs, email, ausgeliehene_artikel, rueckgabedatum, verwendungszweck,
     #                                 leihdatum)
+    notify_lender_by_email = questionary.confirm("Soll eine E-Mail an die ausleihende Person gesendet werden?").ask()
+    if notify_lender_by_email:
+        # send_email_to_lender(email, leihschein_filename)
+        print("E-Mail an die ausleihende Person wurde versendet.")
     # send_email_to_lender(email, leihschein_filename)
     open_pdf_file(leihschein_filename)
