@@ -63,8 +63,8 @@ class DateValidator(Validator):
         if re.fullmatch(r"[0-3][0-9]\.[0-1][0-9]\.[0-9]{4}", document.text):
             try:
                return_date = datetime.strptime(document.text, "%d.%m.%Y").date()
-            except ValueError:
-                raise ValidationError(message="Bitte geben Sie ein gültiges Datum im Format DD.MM.YYYY ein.")
+            except ValueError as exc:
+                raise ValidationError(message="Bitte geben Sie ein gültiges Datum im Format DD.MM.YYYY ein.") from exc
             now = datetime.now().date()
             if return_date < now:
                raise ValidationError(message="Das Rückgabedatum kann nicht in der Vergangenheit liegen.")
