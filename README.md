@@ -8,6 +8,8 @@ Zusätzlich wird ein Outlook-Task mit Ablaufdatum angelegt und das generierte PD
 - typing_extensions=4.7.0
 - pypdf=3.11.1
 - pyinstaller=5.6.2
+- questionary == 2.0.1
+- keyboard == 0.13.5
 
 ## Bau
 Empfohlen ist für den Bau einer Windows-Executable das Tool [PyInstaller](https://pyinstaller.org/en/stable/index.html).
