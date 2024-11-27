@@ -256,17 +256,7 @@ def on_f1_press(event):
     print("F1 wurde gedrückt. Öffne Menü...")
     show_menu()
 
-if __name__ == "__main__":
-    # Prüfe, wie das Python-Skript ausgeführt wird, um Applikationspfad korrekt zu setzen
-    if getattr(sys, 'frozen', False):
-        # If the application is run as a bundle, the PyInstaller bootloader
-        # extends the sys module by a flag frozen=True and sets the app
-        # path into variable _MEIPASS'.
-        application_path = sys._MEIPASS
-    else:
-        application_path = os.path.dirname(os.path.abspath(__file__))
-    execution_path = os.path.dirname(sys.executable)
-
+def main():
     # Programmheader
     print(f"{'*' * 60}\n Sie verwenden das Leihscheintool in Version {___version__}\n" 
            + " Es hilft Ihnen beim Verleih von Hardware der DHBW.\n"
@@ -325,3 +315,17 @@ if __name__ == "__main__":
         # send_email_to_lender(formular_data.email, leihschein_filename)
         print("E-Mail an die ausleihende Person wurde versendet.")
     open_pdf_file(leihschein_filename)
+
+
+if __name__ == "__main__":
+    # Prüfe, wie das Python-Skript ausgeführt wird, um Applikationspfad korrekt zu setzen
+    if getattr(sys, 'frozen', False):
+        # If the application is run as a bundle, the PyInstaller bootloader
+        # extends the sys module by a flag frozen=True and sets the app
+        # path into variable _MEIPASS'.
+        application_path = sys._MEIPASS
+    else:
+        application_path = os.path.dirname(os.path.abspath(__file__))
+    execution_path = os.path.dirname(sys.executable)
+    main()
+    
