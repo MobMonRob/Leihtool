@@ -258,7 +258,7 @@ def on_f1_press(event):
 
 def main():
     """
-    Hauptfunktion, die den Ablauf des Leihscheintool definiert
+    Hauptfunktion, die den Ablauf des Leihscheintools definiert
     """
     # Programmheader
     print(f"{'*' * 60}\n Sie verwenden das Leihscheintool in Version {___version__}\n" 
