@@ -257,6 +257,9 @@ def on_f1_press(event):
     show_menu()
 
 def main():
+    """
+    Hauptfunktion, die den Ablauf des Leihscheintool definiert
+    """
     # Programmheader
     print(f"{'*' * 60}\n Sie verwenden das Leihscheintool in Version {___version__}\n" 
            + " Es hilft Ihnen beim Verleih von Hardware der DHBW.\n"
@@ -328,4 +331,3 @@ if __name__ == "__main__":
         application_path = os.path.dirname(os.path.abspath(__file__))
     execution_path = os.path.dirname(sys.executable)
     main()
-    
