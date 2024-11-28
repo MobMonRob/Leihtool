@@ -85,6 +85,24 @@ class DateValidator(Validator):
         else:
             raise ValidationError(message="Bitte geben Sie ein gültiges Datum im Format DD.MM.YYYY ein.")
 
+def get_list_of_studiengaenge():
+    return [
+            'Informatik',
+            'Maschinenbau',
+            'Gesundheitswesen',
+            'Mechatronik',
+            'BWL',
+            'Sozialwesen',
+            'Angewandte Hebammenwissenschaft',
+            'Soziale Arbeit',
+            'Architektur',
+            'Bauingenieurwesen',
+            'Elektrotechnik',
+            'Medizintechnik',
+            'Wirtschaftsingenierurwesen',
+            'Medien'
+        ]
+
 def generate_uniform_leihschein_filename(p_formular_data: FormularData):
     """
     Hilfsmethoden zur Erstellung eines einheitlichen Dateinamens für Leihscheine
@@ -275,22 +293,7 @@ def main():
     # Eingabeaufforderungen für alle Formularfelder
     formular_data.studiengang = questionary.autocomplete(
         'Studiengang:',
-        choices=[
-            'Informatik',
-            'Maschinenbau',
-            'Gesundheitswesen',
-            'Mechatronik',
-            'BWL',
-            'Sozialwesen',
-            'Angewandte Hebammenwissenschaft',
-            'Soziale Arbeit',
-            'Architektur',
-            'Bauingenieurwesen',
-            'Elektrotechnik',
-            'Medizintechnik',
-            'Wirtschaftsingenierurwesen',
-            'Medien'
-        ]).ask()
+        choices=get_list_of_studiengaenge()).ask()
     formular_data.name = questionary.text('Name:', validate=NameValidator).ask()
     formular_data.kurs = questionary.text('Kurs:').ask()
     formular_data.email = questionary.text('Email:', validate=EMailValidator).ask()
