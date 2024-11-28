@@ -272,8 +272,7 @@ def show_menu():
     :return: keine Rückgabe
     """
     menu_options = [
-        "Standardwerte festlegen",
-        "Einstellungen für externe Anwendungen (Obsidian)"
+        "Standardwerte festlegen"
     ]
     choice = questionary.select(
         "Wählen Sie eine Option:",
@@ -283,9 +282,6 @@ def show_menu():
     if choice == "Standardwerte festlegen":
         # Aktion für Option 1
         set_default_values()
-    elif choice == "Einstellungen für externe Anwendungen (Obsidian)":
-        # Aktion für Option 2
-        pass
 
 # Funktion, die auf F1-Taste reagiert
 def on_f1_press(event):
