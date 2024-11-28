@@ -392,7 +392,7 @@ def main():
     create_outlook_task_as_reminder(formular_data)
     notify_lender_by_email = questionary.confirm("Soll eine E-Mail an die ausleihende Person gesendet werden?").ask()
     if notify_lender_by_email:
-        # send_email_to_lender(formular_data.email, leihschein_filename)
+        send_email_to_lender(formular_data.email, leihschein_filename)
         print("E-Mail an die ausleihende Person wurde versendet.")
     open_pdf_file(leihschein_filename)
 
