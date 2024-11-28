@@ -337,7 +337,7 @@ def load_default_values() -> DefaultValues:
     """
     default_values = DefaultValues()
     try:
-        with open(os.path.join(USER_PATH, 'LeihscheinTool', 'default_values.txt'), 'rb') as default_values_file:
+        with open(os.path.join(USER_PATH, 'LeihscheinTool', 'default_values.txt'), 'r', encoding="utf-8") as default_values_file:
             default_values.studiengang = default_values_file.readline().strip()
             default_values.verwendungszweck = default_values_file.readline().strip()
             default_values.ausgegeben_durch = default_values_file.readline().strip()
