@@ -14,6 +14,7 @@ __status__ = "Production"
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
 from typing import Optional
 import re
 import keyboard
@@ -23,7 +24,6 @@ import win32com.client
 from pypdf import PdfReader, PdfWriter
 import questionary
 from questionary import Validator, ValidationError
-
 
 class Artikel:
     """
@@ -51,39 +51,84 @@ class FormularData:
         self.verwendungszweck = None
         self.ausgegeben_durch = None
         self.leihdatum = None
+class DefaultValues:
+    """
+    Klasse für Standardwerte
+    """
+    def __init__(self):
+        self.studiengang = None
+        self.verwendungszweck = None
+        self.ausgegeben_durch = None
 
 class NameValidator(Validator):
+    """
+    Validierungsklasse für den Namen
+    """
     def validate(self, document: Document) -> None:
         if len(document.text) == 0:
             raise ValidationError(message="Bitte geben Sie einen Namen ein.")
-        
+       
 class AnzahlValidator(Validator):
+    """
+    Validierungsklasse für Anzahl der ausgeliehenen Artikel
+    """
     def validate(self, document: Document) -> None:
         if not document.text.isdigit() or int(document.text) < 1: 
             raise ValidationError(message="Bitte geben Sie eine Zahl größer 0 ein. Sie füllen gerade einen Leihschein aus, um mindestens einen Artikel zu verleihen.")
 
 class NumberValidator(Validator):
+    """
+    Validierungsklasse für Zahlen
+    """
     def validate(self, document: Document) -> None:
         if not document.text.isdigit(): 
             raise ValidationError(message="Bitte geben Sie eine Zahl ein.")
-        
+
 class EMailValidator(Validator):
+    """
+    Validierungsklasse für E-Mail-Adressen
+    """
     def validate(self, document: Document) -> None:
         if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", document.text): 
             raise ValidationError(message="Bitte geben Sie eine gültige E-Mail-Adresse ein.")
-        
-class DateValidator(Validator):
+
+class ReturnDateValidator(Validator):
+    """
+    Validierungsklasse für Angabe des Rückgabedatums
+    """
     def validate(self, document: Document) -> None:
         if re.fullmatch(r"[0-3][0-9]\.[0-1][0-9]\.[0-9]{4}", document.text):
             try:
-               return_date = datetime.strptime(document.text, "%d.%m.%Y").date()
+                return_date = datetime.strptime(document.text, "%d.%m.%Y").date()
             except ValueError as exc:
                 raise ValidationError(message="Bitte geben Sie ein gültiges Datum im Format DD.MM.YYYY ein.") from exc
             now = datetime.now().date()
             if return_date < now:
-               raise ValidationError(message="Das Rückgabedatum kann nicht in der Vergangenheit liegen.")
+                raise ValidationError(message="Das Rückgabedatum kann nicht in der Vergangenheit liegen.")
         else:
             raise ValidationError(message="Bitte geben Sie ein gültiges Datum im Format DD.MM.YYYY ein.")
+
+def get_list_of_studiengaenge() -> list[str]:
+    """
+    Gibt eine Liste von Studiengängen zurück
+    :return: Liste von Studiengängen als Array
+    """
+    return [
+            'Informatik',
+            'Maschinenbau',
+            'Gesundheitswesen',
+            'Mechatronik',
+            'BWL',
+            'Sozialwesen',
+            'Angewandte Hebammenwissenschaft',
+            'Soziale Arbeit',
+            'Architektur',
+            'Bauingenieurwesen',
+            'Elektrotechnik',
+            'Medizintechnik',
+            'Wirtschaftsingenierurwesen',
+            'Medien'
+        ]
 
 def generate_uniform_leihschein_filename(p_formular_data: FormularData):
     """
@@ -106,7 +151,7 @@ def generate_leihschein_pdf(p_formular_data: FormularData, p_leihschein_filename
     :return: Keine Rückgabe
     """
     # Original PDF template file
-    template_file = os.path.join(application_path, 'Ausleihe_leer.pdf')
+    template_file = os.path.join(APPLICATION_PATH, 'Ausleihe_leer.pdf')
 
     # Open the output PDF in append and read mode
     with open(p_leihschein_filename, 'wb') as output_pdf:
@@ -216,7 +261,7 @@ def send_email_to_lender(p_email, p_leihschein_filename):
     mail.HTMLbody = mail.HTMLbody[:index + 1] + message + mail.HTMLbody[index + 1:] 
 
 
-    absolut_path_to_leihschein_pdf = os.path.join(execution_path, p_leihschein_filename)
+    absolut_path_to_leihschein_pdf = os.path.join(EXECUTION_PATH, p_leihschein_filename)
     mail.Attachments.Add(absolut_path_to_leihschein_pdf)
 
     mail.Send()
@@ -228,8 +273,7 @@ def show_menu():
     """
     menu_options = [
         "Standardwerte festlegen",
-        "Einstellungen für externe Anwendungen (Obsidian)",
-        "Programm beenden"
+        "Einstellungen für externe Anwendungen (Obsidian)"
     ]
     choice = questionary.select(
         "Wählen Sie eine Option:",
@@ -238,12 +282,10 @@ def show_menu():
 
     if choice == "Standardwerte festlegen":
         # Aktion für Option 1
-        pass
+        set_default_values()
     elif choice == "Einstellungen für externe Anwendungen (Obsidian)":
         # Aktion für Option 2
         pass
-    elif choice == "Programm beenden":
-        sys.exit(0)
 
 # Funktion, die auf F1-Taste reagiert
 def on_f1_press(event):
@@ -255,6 +297,49 @@ def on_f1_press(event):
     sys.stdout.write('\033[2K\033[1G')  # Löscht die aktuelle Zeile im Terminal
     print("F1 wurde gedrückt. Öffne Menü...")
     show_menu()
+
+def set_default_values():
+    """
+    Setzt Standardwerte für das Leihscheintool basierend auf Benutzereingabe
+    """
+    default_values = DefaultValues()
+    default_values.studiengang = questionary.autocomplete("Studiengang:", choices=get_list_of_studiengaenge()).ask()
+    default_values.verwendungszweck = questionary.text("Verwendungszweck:").ask()
+    default_values.ausgegeben_durch = questionary.text("Ausgegeben durch:").ask()
+    save_default_values(default_values)
+
+def save_default_values(p_default_values: DefaultValues):
+    """
+    Speichert Standardwerte in einer Konfigurationsdatei
+    :param p_default_values: Standardwerte
+    :return: keine Rückgabe
+    """
+    try:
+        dir_of_leihschein_settings = os.path.join(USER_PATH, 'LeihscheinTool')
+        path_of_default_values = os.path.join(dir_of_leihschein_settings, 'default_values.txt')
+        # Erstelle Verzeichnis, falls es noch nicht existiert
+        Path(dir_of_leihschein_settings).mkdir(parents=True, exist_ok=True)
+        with open(path_of_default_values, 'w', encoding="utf-8") as default_values_file:
+            default_values_file.write(p_default_values.studiengang + '\n')
+            default_values_file.write(p_default_values.verwendungszweck + '\n')
+            default_values_file.write(p_default_values.ausgegeben_durch + '\n')
+    except FileNotFoundError:
+        print("Standardwerte konnten nicht gespeichert werden.")
+
+def load_default_values() -> DefaultValues:
+    """
+    Lädt Standardwerte aus einer Konfigurationsdatei
+    :return: Standardwerte als Klassenobjekt DefaultValues
+    """
+    default_values = DefaultValues()
+    try:
+        with open(os.path.join(USER_PATH, 'LeihscheinTool', 'default_values.txt'), 'r', encoding="utf-8") as default_values_file:
+            default_values.studiengang = default_values_file.readline().strip()
+            default_values.verwendungszweck = default_values_file.readline().strip()
+            default_values.ausgegeben_durch = default_values_file.readline().strip()
+    except FileNotFoundError:
+        print("Standardwerte konnten nicht geladen werden. Es werden leere Standardwerte verwendet.")
+    return default_values
 
 def main():
     """
@@ -270,27 +355,15 @@ def main():
     # Überwachen der F1-Taste
     keyboard.on_press_key("F1", on_f1_press)
 
+    # Standardwerte laden
+    default_values = load_default_values()
+
     formular_data = FormularData()
 
     # Eingabeaufforderungen für alle Formularfelder
     formular_data.studiengang = questionary.autocomplete(
         'Studiengang:',
-        choices=[
-            'Informatik',
-            'Maschinenbau',
-            'Gesundheitswesen',
-            'Mechatronik',
-            'BWL',
-            'Sozialwesen',
-            'Angewandte Hebammenwissenschaft',
-            'Soziale Arbeit',
-            'Architektur',
-            'Bauingenieurwesen',
-            'Elektrotechnik',
-            'Medizintechnik',
-            'Wirtschaftsingenierurwesen',
-            'Medien'
-        ]).ask()
+        choices=get_list_of_studiengaenge(), default=default_values.studiengang).ask()
     formular_data.name = questionary.text('Name:', validate=NameValidator).ask()
     formular_data.kurs = questionary.text('Kurs:').ask()
     formular_data.email = questionary.text('Email:', validate=EMailValidator).ask()
@@ -303,9 +376,9 @@ def main():
         artikel.bezeichnung = questionary.text('Bezeichnung:').ask()
         artikel.seriennummer = questionary.text('Seriennummer:').ask()
         artikel.inventar_nummer = questionary.text('Inventar-Nummer:').ask()
-    formular_data.rueckgabedatum = questionary.text('Rückgabedatum:', validate=DateValidator).ask()
-    formular_data.verwendungszweck = questionary.text('Verwendungszweck:').ask()
-    formular_data.ausgegeben_durch = questionary.text('Ausgegeben durch:').ask()
+    formular_data.rueckgabedatum = questionary.text('Rückgabedatum:', validate=ReturnDateValidator).ask()
+    formular_data.verwendungszweck = questionary.text('Verwendungszweck:', default=default_values.verwendungszweck).ask()
+    formular_data.ausgegeben_durch = questionary.text('Ausgegeben durch:', default=default_values.ausgegeben_durch, validate=NameValidator).ask()
     formular_data.leihdatum = datetime.now().strftime('%d.%m.%Y')
 
     leihschein_filename = generate_uniform_leihschein_filename(formular_data)
@@ -326,8 +399,9 @@ if __name__ == "__main__":
         # If the application is run as a bundle, the PyInstaller bootloader
         # extends the sys module by a flag frozen=True and sets the app
         # path into variable _MEIPASS'.
-        application_path = sys._MEIPASS
+        APPLICATION_PATH = sys._MEIPASS
     else:
-        application_path = os.path.dirname(os.path.abspath(__file__))
-    execution_path = os.path.dirname(sys.executable)
+        APPLICATION_PATH = os.path.dirname(os.path.abspath(__file__))
+    EXECUTION_PATH = os.path.dirname(sys.executable)
+    USER_PATH = os.path.expanduser("~")
     main()
