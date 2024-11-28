@@ -61,26 +61,41 @@ class DefaultValues:
         self.ausgegeben_durch = None
 
 class NameValidator(Validator):
+    """
+    Validierungsklasse für den Namen
+    """
     def validate(self, document: Document) -> None:
         if len(document.text) == 0:
             raise ValidationError(message="Bitte geben Sie einen Namen ein.")
-        
+       
 class AnzahlValidator(Validator):
+    """
+    Validierungsklasse für Anzahl der ausgeliehenen Artikel
+    """
     def validate(self, document: Document) -> None:
         if not document.text.isdigit() or int(document.text) < 1: 
             raise ValidationError(message="Bitte geben Sie eine Zahl größer 0 ein. Sie füllen gerade einen Leihschein aus, um mindestens einen Artikel zu verleihen.")
 
 class NumberValidator(Validator):
+    """
+    Validierungsklasse für Zahlen
+    """
     def validate(self, document: Document) -> None:
         if not document.text.isdigit(): 
             raise ValidationError(message="Bitte geben Sie eine Zahl ein.")
-        
+
 class EMailValidator(Validator):
+    """
+    Validierungsklasse für E-Mail-Adressen
+    """
     def validate(self, document: Document) -> None:
         if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", document.text): 
             raise ValidationError(message="Bitte geben Sie eine gültige E-Mail-Adresse ein.")
-        
-class DateValidator(Validator):
+
+class ReturnDateValidator(Validator):
+    """
+    Validierungsklasse für Angabe des Rückgabedatums
+    """
     def validate(self, document: Document) -> None:
         if re.fullmatch(r"[0-3][0-9]\.[0-1][0-9]\.[0-9]{4}", document.text):
             try:
@@ -93,7 +108,11 @@ class DateValidator(Validator):
         else:
             raise ValidationError(message="Bitte geben Sie ein gültiges Datum im Format DD.MM.YYYY ein.")
 
-def get_list_of_studiengaenge():
+def get_list_of_studiengaenge() -> list[str]:
+    """
+    Gibt eine Liste von Studiengängen zurück
+    :return: Liste von Studiengängen als Array
+    """
     return [
             'Informatik',
             'Maschinenbau',
@@ -310,7 +329,7 @@ def save_default_values(p_default_values: DefaultValues):
 def load_default_values() -> DefaultValues:
     """
     Lädt Standardwerte aus einer Konfigurationsdatei
-    :return: Standardwerte
+    :return: Standardwerte als Klassenobjekt DefaultValues
     """
     default_values = DefaultValues()
     try:
