@@ -14,6 +14,7 @@ __status__ = "Production"
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
 from typing import Optional
 import re
 import keyboard
@@ -23,7 +24,6 @@ import win32com.client
 from pypdf import PdfReader, PdfWriter
 import questionary
 from questionary import Validator, ValidationError
-
 
 class Artikel:
     """
@@ -318,12 +318,15 @@ def save_default_values(p_default_values: DefaultValues):
     :return: keine Rückgabe
     """
     try:
-        path_of_default_values = os.path.join(USER_PATH, 'LeihscheinTool', 'default_values.txt')
+        dir_of_leihschein_settings = os.path.join(USER_PATH, 'LeihscheinTool')
+        path_of_default_values = os.path.join(dir_of_leihschein_settings, 'default_values.txt')
+        # Erstelle Verzeichnis, falls es noch nicht existiert
+        Path(dir_of_leihschein_settings).mkdir(parents=True, exist_ok=True)
         with open(path_of_default_values, 'w', encoding="utf-8") as default_values_file:
             default_values_file.write(p_default_values.studiengang + '\n')
             default_values_file.write(p_default_values.verwendungszweck + '\n')
             default_values_file.write(p_default_values.ausgegeben_durch + '\n')
-    except FileNotFoundError as exc:
+    except FileNotFoundError:
         print("Standardwerte konnten nicht gespeichert werden.")
 
 def load_default_values() -> DefaultValues:
