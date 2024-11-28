@@ -326,6 +326,9 @@ def main():
     # Überwachen der F1-Taste
     keyboard.on_press_key("F1", on_f1_press)
 
+    # Standardwerte laden
+    default_values = load_default_values()
+
     formular_data = FormularData()
 
     # Eingabeaufforderungen für alle Formularfelder
