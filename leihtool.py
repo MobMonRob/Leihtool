@@ -282,6 +282,36 @@ def on_f1_press(event):
     print("F1 wurde gedrückt. Öffne Menü...")
     show_menu()
 
+def save_default_values(p_default_values: DefaultValues):
+    """
+    Speichert Standardwerte in einer Konfigurationsdatei
+    :param p_default_values: Standardwerte
+    :return: keine Rückgabe
+    """
+    try:
+        path_of_default_values = os.path.join(USER_PATH, 'LeihscheinTool', 'default_values.txt')
+        with open(path_of_default_values, 'w', encoding="utf-8") as default_values_file:
+            default_values_file.write(p_default_values.studiengang + '\n')
+            default_values_file.write(p_default_values.verwendungszweck + '\n')
+            default_values_file.write(p_default_values.ausgegeben_durch + '\n')
+    except FileNotFoundError as exc:
+        print("Standardwerte konnten nicht gespeichert werden.")
+
+def load_default_values() -> DefaultValues:
+    """
+    Lädt Standardwerte aus einer Konfigurationsdatei
+    :return: Standardwerte
+    """
+    default_values = DefaultValues()
+    try:
+        with open(os.path.join(USER_PATH, 'LeihscheinTool', 'default_values.txt'), 'rb') as default_values_file:
+            default_values.studiengang = default_values_file.readline().strip()
+            default_values.verwendungszweck = default_values_file.readline().strip()
+            default_values.ausgegeben_durch = default_values_file.readline().strip()
+    except FileNotFoundError:
+        print("Standardwerte konnten nicht geladen werden. Es werden leere Standardwerte verwendet.")
+    return default_values
+
 def main():
     """
     Hauptfunktion, die den Ablauf des Leihscheintools definiert
