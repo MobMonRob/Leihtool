@@ -284,6 +284,7 @@ def show_menu():
     if choice == "Standardwerte festlegen":
         # Aktion für Option 1
         set_default_values()
+        main()
     elif choice == "Einstellungen für externe Anwendungen (Obsidian)":
         # Aktion für Option 2
         pass
