@@ -124,7 +124,7 @@ def generate_leihschein_pdf(p_formular_data: FormularData, p_leihschein_filename
     :return: Keine Rückgabe
     """
     # Original PDF template file
-    template_file = os.path.join(application_path, 'Ausleihe_leer.pdf')
+    template_file = os.path.join(APPLICATION_PATH, 'Ausleihe_leer.pdf')
 
     # Open the output PDF in append and read mode
     with open(p_leihschein_filename, 'wb') as output_pdf:
@@ -234,7 +234,7 @@ def send_email_to_lender(p_email, p_leihschein_filename):
     mail.HTMLbody = mail.HTMLbody[:index + 1] + message + mail.HTMLbody[index + 1:] 
 
 
-    absolut_path_to_leihschein_pdf = os.path.join(execution_path, p_leihschein_filename)
+    absolut_path_to_leihschein_pdf = os.path.join(EXECUTION_PATH, p_leihschein_filename)
     mail.Attachments.Add(absolut_path_to_leihschein_pdf)
 
     mail.Send()
@@ -329,8 +329,9 @@ if __name__ == "__main__":
         # If the application is run as a bundle, the PyInstaller bootloader
         # extends the sys module by a flag frozen=True and sets the app
         # path into variable _MEIPASS'.
-        application_path = sys._MEIPASS
+        APPLICATION_PATH = sys._MEIPASS
     else:
-        application_path = os.path.dirname(os.path.abspath(__file__))
-    execution_path = os.path.dirname(sys.executable)
+        APPLICATION_PATH = os.path.dirname(os.path.abspath(__file__))
+    EXECUTION_PATH = os.path.dirname(sys.executable)
+    USER_PATH = os.path.expanduser("~")
     main()
