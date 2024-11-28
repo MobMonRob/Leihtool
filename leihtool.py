@@ -380,7 +380,7 @@ def main():
         artikel.bezeichnung = questionary.text('Bezeichnung:').ask()
         artikel.seriennummer = questionary.text('Seriennummer:').ask()
         artikel.inventar_nummer = questionary.text('Inventar-Nummer:').ask()
-    formular_data.rueckgabedatum = questionary.text('Rückgabedatum:', validate=DateValidator).ask()
+    formular_data.rueckgabedatum = questionary.text('Rückgabedatum:', validate=ReturnDateValidator).ask()
     formular_data.verwendungszweck = questionary.text('Verwendungszweck:', default=default_values.verwendungszweck).ask()
     formular_data.ausgegeben_durch = questionary.text('Ausgegeben durch:', default=default_values.ausgegeben_durch, validate=NameValidator).ask()
     formular_data.leihdatum = datetime.now().strftime('%d.%m.%Y')
