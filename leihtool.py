@@ -264,7 +264,7 @@ def show_menu():
 
     if choice == "Standardwerte festlegen":
         # Aktion für Option 1
-        pass
+        set_default_values()
     elif choice == "Einstellungen für externe Anwendungen (Obsidian)":
         # Aktion für Option 2
         pass
@@ -281,6 +281,16 @@ def on_f1_press(event):
     sys.stdout.write('\033[2K\033[1G')  # Löscht die aktuelle Zeile im Terminal
     print("F1 wurde gedrückt. Öffne Menü...")
     show_menu()
+
+def set_default_values():
+    """
+    Setzt Standardwerte für das Leihscheintool basierend auf Benutzereingabe
+    """
+    default_values = DefaultValues()
+    default_values.studiengang = questionary.autocomplete("Studiengang:", choices=get_list_of_studiengaenge()).ask()
+    default_values.verwendungszweck = questionary.text("Verwendungszweck:").ask()
+    default_values.ausgegeben_durch = questionary.text("Ausgegeben durch:").ask()
+    save_default_values(default_values)
 
 def save_default_values(p_default_values: DefaultValues):
     """
