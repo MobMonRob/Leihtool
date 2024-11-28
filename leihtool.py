@@ -51,6 +51,14 @@ class FormularData:
         self.verwendungszweck = None
         self.ausgegeben_durch = None
         self.leihdatum = None
+class DefaultValues:
+    """
+    Klasse für Standardwerte
+    """
+    def __init__(self):
+        self.studiengang = None
+        self.verwendungszweck = None
+        self.ausgegeben_durch = None
 
 class NameValidator(Validator):
     def validate(self, document: Document) -> None:
