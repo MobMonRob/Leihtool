@@ -367,7 +367,7 @@ def main():
     # Eingabeaufforderungen für alle Formularfelder
     formular_data.studiengang = questionary.autocomplete(
         'Studiengang:',
-        choices=get_list_of_studiengaenge()).ask()
+        choices=get_list_of_studiengaenge(), default=default_values.studiengang).ask()
     formular_data.name = questionary.text('Name:', validate=NameValidator).ask()
     formular_data.kurs = questionary.text('Kurs:').ask()
     formular_data.email = questionary.text('Email:', validate=EMailValidator).ask()
@@ -381,8 +381,8 @@ def main():
         artikel.seriennummer = questionary.text('Seriennummer:').ask()
         artikel.inventar_nummer = questionary.text('Inventar-Nummer:').ask()
     formular_data.rueckgabedatum = questionary.text('Rückgabedatum:', validate=DateValidator).ask()
-    formular_data.verwendungszweck = questionary.text('Verwendungszweck:').ask()
-    formular_data.ausgegeben_durch = questionary.text('Ausgegeben durch:').ask()
+    formular_data.verwendungszweck = questionary.text('Verwendungszweck:', default=default_values.verwendungszweck).ask()
+    formular_data.ausgegeben_durch = questionary.text('Ausgegeben durch:', default=default_values.ausgegeben_durch, validate=NameValidator).ask()
     formular_data.leihdatum = datetime.now().strftime('%d.%m.%Y')
 
     leihschein_filename = generate_uniform_leihschein_filename(formular_data)
