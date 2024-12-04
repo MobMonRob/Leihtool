@@ -56,9 +56,9 @@ class DefaultValues:
     Klasse für Standardwerte
     """
     def __init__(self):
-        self.studiengang = None
-        self.verwendungszweck = None
-        self.ausgegeben_durch = None
+        self.studiengang = ""
+        self.verwendungszweck = ""
+        self.ausgegeben_durch = ""
 
 class NameValidator(Validator):
     """
